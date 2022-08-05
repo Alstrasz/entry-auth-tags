@@ -16,7 +16,7 @@ model User {
   password      String @db.VarChar(128)
   salt          String @db.VarChar(16)
   nickname      String @unique() @db.VarChar(40)
-  assigned_tags Tag[]  @relation("assigned_tags_to_user")
+  tags Tag[]  @relation("assigned_tags_to_user")
   created_tags  Tag[]  @relation("created_tags_by_user")
 
   @@map("users")

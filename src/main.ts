@@ -1,5 +1,5 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { ClassSerializerInterceptor, INestApplication, ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -35,6 +35,8 @@ async function bootstrap () {
     app.useGlobalPipes( new ValidationPipe( {
         whitelist: true,
     } ) );
+
+    app.useGlobalInterceptors( new ClassSerializerInterceptor( new Reflector() ) );
 
     app.enableCors();
 

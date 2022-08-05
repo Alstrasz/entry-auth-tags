@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { ConflictExceptionDto } from 'src/dto/conflict_exception.dto';
+import { UserWithTags } from 'src/prisma/interfaces/user';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserInterface } from './interfaces/create_user_interface';
 
@@ -23,10 +24,15 @@ export class UsersService {
             } );
     }
 
-    async get_by_id ( id: string ): Promise<User | null> {
+    async get_by_id ( id: string, add_tags?: false ): Promise<User | null>;
+    async get_by_id ( id: string, add_tags?: true ): Promise<UserWithTags | null>;
+    async get_by_id ( id: string, add_tags: boolean = false ): Promise<User| UserWithTags | null> {
         return await this.prisma_service.user.findUnique( {
             where: {
                 id,
+            },
+            include: {
+                tags: add_tags,
             },
         } )
             .catch( ( err ) => {

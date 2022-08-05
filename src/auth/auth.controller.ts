@@ -26,10 +26,10 @@ export class AuthController {
     }
 
     @ApiOperation( { summary: 'Creates user by username/password pair and issues jwt token' } )
-    @Post( 'register' )
+    @Post( 'signin' )
     @ApiCreatedResponse( { type: AccessTokenDto } )
     @ApiConflictResponse( { type: ConflictExceptionDto } )
-    async register ( @Body() user_signin_credentials_dto: UserSigninCredentialsDto ) {
+    async signin ( @Body() user_signin_credentials_dto: UserSigninCredentialsDto ) {
         return new AccessTokenDto( await this.auth_service.signin( user_signin_credentials_dto ) );
     }
 }
