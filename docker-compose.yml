@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+    nest:
+        image: node:16
+        container_name: entry-auth-tags-nest
+        depends_on:
+            - postgres
+        restart: "no"
+        logging:
+            options:
+                max-size: "50m"
+        environment:
+            - PORT=8080
+            - HOST=0.0.0.0
+            - DATABASE_URL=postgres://root:root@postgres:5432/test
+        ports:
+            - 3000:8080
+        volumes:
+            - .:/app
+        command: bash -c "echo installing packages && npm install --prefix=/app && echo launching && npm run start:dev --prefix=/app"
+
+    postgres:
+        image: 'postgres:14.4'
+        container_name: entry-auth-tags-postgres
+        restart: "no"
+        logging:
+            options:
+                max-size: "50m"
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=root
+            - POSTGRES_PASSWORD=root
+            - POSTGRES_DB=test
+        volumes:
+            - ./db-data/:/var/lib/postgresql/data/
+            
