@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { AuthService } from '../auth/auth.service';
 import { UserWithCreatedTags, UserWithTags } from '../prisma/interfaces/user';
 import { PrismaService } from '../prisma/prisma.service';
@@ -51,7 +51,7 @@ export class UsersService {
             } );
     }
 
-    async update_user ( id: string, update_user_dto: UpdateUserDto ) {
+    async update_user ( id: string, update_user_dto: UpdateUserDto ): Promise<User> {
         const update_query: Prisma.UserUpdateInput = {};
         if ( update_user_dto.email ) {
             update_query.email = update_user_dto.email;
@@ -78,24 +78,46 @@ export class UsersService {
             } );
     }
 
-    async delete_user ( id: string ) { // cascading should be added
-        return this.prisma_service.user.delete( {
+    async delete_user ( id: string ) {
+        await this.prisma_service.user.delete( {
             where: {
                 id,
             },
         } );
     }
 
-    async connect_tags ( id: string, tag_ids: Array<number> ) {
+    async connect_tags ( id: string, tag_ids: Array<number> ): Promise<UserWithTags> {
+        return this.prisma_service.$transaction( async ( prisma ) => {
+            const tags = await prisma.tag.findMany( { where: { id: { in: tag_ids } } } );
+
+            return prisma.user.update( {
+                where: {
+                    id,
+                },
+                data: {
+                    tags: {
+                        connect: _.map( tags, ( elem ) => {
+                            return { id: elem.id };
+                        } ),
+                    },
+                },
+                include: {
+                    tags: true,
+                },
+            } );
+        } );
+    }
+
+    async unassign_tag ( id: string, tag_id: number ): Promise<UserWithTags> {
         return this.prisma_service.user.update( {
             where: {
                 id,
             },
             data: {
                 tags: {
-                    connect: _.map( tag_ids, ( elem ) => {
-                        return { id: elem };
-                    } ),
+                    disconnect: {
+                        id: tag_id,
+                    },
                 },
             },
             include: {
