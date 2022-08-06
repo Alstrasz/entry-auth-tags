@@ -1,0 +1,43 @@
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+name: Backend test
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+        postgres-version: [14.4]
+
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres-version }}
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+        - 5432:5432
+    
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm install
+        run: npm install
+        env:
+          CI: true
+      - name: npm test
+        run: npm run test:cov
+        env:
+          CI: true
+          DATABASE_URL: postgres://test:test@localhost:5432/test

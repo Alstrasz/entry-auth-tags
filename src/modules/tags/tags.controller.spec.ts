@@ -11,7 +11,7 @@ describe( 'TagsController', () => {
     let test_helper_service: TestHelperService;
     beforeAll( async () => {
         const test_helper_module: TestingModule = await Test.createTestingModule( {
-            imports: [TestHelperModule.register( { test_bed_name: 'AuthController' } )],
+            imports: [TestHelperModule.register( { test_bed_name: 'TagsController' } )],
         } ).compile();
 
         test_helper_service = test_helper_module.get<TestHelperService>( TestHelperService );

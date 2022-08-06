@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { AuthService } from '../../modules/auth/auth.service';
 import { UserSigninCredentialsDto } from '../../modules/auth/dto/user_signin_credentials.dto';
 import { TEST_HELPER_MODULE_OPTIONS_NAME } from './constants';
 import { TestHelperModuleOptions } from './interfaces/test_helper_module_options';
@@ -10,7 +11,10 @@ export class TestHelperService {
         user_signin_credentials_dto: 0,
     };
 
-    constructor ( @Inject( TEST_HELPER_MODULE_OPTIONS_NAME ) private options: TestHelperModuleOptions ) {
+    constructor (
+        @Inject( TEST_HELPER_MODULE_OPTIONS_NAME ) private options: TestHelperModuleOptions,
+        private auth_service: AuthService,
+    ) {
         this.unique_name = options?.test_bed_name || 'undefined';
     }
 
@@ -22,5 +26,11 @@ export class TestHelperService {
             nickname: `${unique_string}`,
             password: `1aA${unique_string}`,
         };
+    }
+
+    async sign_in_unique_user () {
+        const user_signin_credentials_dto = this.get_unique_user_signin_credentials_dto();
+        const token = await this.auth_service.signin( user_signin_credentials_dto );
+        return { user_signin_credentials_dto, token };
     }
 }

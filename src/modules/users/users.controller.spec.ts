@@ -7,6 +7,7 @@ import { UsersModule } from './users.module';
 describe( 'UsersController', () => {
     let controller: UsersController;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let test_helper_service: TestHelperService;
     beforeAll( async () => {
         const test_helper_module: TestingModule = await Test.createTestingModule( {
@@ -25,7 +26,6 @@ describe( 'UsersController', () => {
     } );
 
     it( 'should be defined', () => {
-        console.log( 1, test_helper_service.get_unique_user_signin_credentials_dto() );
         expect( controller ).toBeDefined();
     } );
 } );

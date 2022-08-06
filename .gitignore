@@ -36,3 +36,4 @@ lerna-debug.log*
 
 # custom
 db-data
+db-data-test
