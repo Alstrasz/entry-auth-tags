@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { ConflictExceptionDto } from 'src/dto/conflict_exception.dto';
-import { UserWithTags } from 'src/prisma/interfaces/user';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { UserWithTags } from 'src/modules/prisma/interfaces/user';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateUserInterface } from './interfaces/create_user_interface';
 
 

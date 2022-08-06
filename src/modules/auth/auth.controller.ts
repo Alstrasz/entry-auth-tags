@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Post, UseGuards, Request } from '@nestjs/common';
 import { ApiConflictResponse, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ConflictExceptionDto } from 'src/dto/conflict_exception.dto';
-import { RequestWithUser } from 'src/users/interfaces/request_with_user';
+import { RequestWithUser } from 'src/modules/users/interfaces/request_with_user';
 import { AuthService } from './auth.service';
 import { AccessTokenDto } from './dto/access_token.dto';
 import { UserLoginCredentialsDto } from './dto/user_login_credentials.dto';

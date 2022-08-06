@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { Request } from 'express';
-import { UserWithTags } from 'src/prisma/interfaces/user';
+import { UserWithTags } from 'src/modules/prisma/interfaces/user';
 
 export interface RequestWithUser extends Request {
     user: User;

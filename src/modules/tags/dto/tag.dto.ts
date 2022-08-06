@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from '@prisma/client';
 import { Exclude, Expose, Type } from 'class-transformer';
-import { TagWithCreator } from 'src/prisma/interfaces/tag';
-import { UserDto } from 'src/users/dto/user.dto';
+import { TagWithCreator } from 'src/modules/prisma/interfaces/tag';
+import { UserDto } from 'src/modules/users/dto/user.dto';
 
 @Exclude()
 export class TagDto implements Omit<Tag, 'creator'> {
