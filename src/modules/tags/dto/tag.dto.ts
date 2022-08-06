@@ -25,7 +25,7 @@ export class TagDto implements Omit<Tag, 'creator'> {
 
 @Exclude()
 export class TagWithCreatorDto extends TagDto {
-    @ApiProperty( { type: UserDto } )
+    @ApiProperty( { type: () => UserDto } )
     @Expose()
     @Type( () => UserDto )
         creator: UserDto;

@@ -1,5 +1,7 @@
 import { INestApplication, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { ConflictExceptionDto } from '../../dto/conflict_exception.dto';
+import { PRISMA_ERROR_CODES } from './constants';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -26,5 +28,27 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         this.$on( 'beforeExit', async () => {
             await app.close();
         } );
+    }
+
+    /**
+     * Converts known error codes to their Http counterpart
+     *
+     * @param {Prisma.PrismaClientKnownRequestError} err
+     * @param {{
+     *             conflict: boolean,
+     *         }} options
+     * @memberof PrismaService
+     */
+    default_exception_handler (
+        err: Prisma.PrismaClientKnownRequestError,
+        options: {
+            conflict?: boolean,
+        },
+    ) {
+        if ( options.conflict ) {
+            if ( err.code === PRISMA_ERROR_CODES.conflict ) {
+                throw new ConflictExceptionDto( err.meta?.target as Array<string> );
+            }
+        }
     }
 }

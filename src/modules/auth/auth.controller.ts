@@ -32,4 +32,6 @@ export class AuthController {
     async signin ( @Body() user_signin_credentials_dto: UserSigninCredentialsDto ) {
         return new AccessTokenDto( await this.auth_service.signin( user_signin_credentials_dto ) );
     }
+
+    // logout
 }

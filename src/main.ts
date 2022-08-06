@@ -1,7 +1,8 @@
-import { ClassSerializerInterceptor, INestApplication, ValidationPipe } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { INestApplication } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { apply_middleware } from './helpers/apply_middleware';
 
 
 export function setup_swagger ( app: INestApplication ) {
@@ -32,13 +33,7 @@ async function bootstrap () {
             logger: ['log', 'error', 'warn', 'debug', 'verbose'],
         } );
 
-    app.useGlobalPipes( new ValidationPipe( {
-        whitelist: true,
-    } ) );
-
-    app.useGlobalInterceptors( new ClassSerializerInterceptor( new Reflector() ) );
-
-    app.enableCors();
+    apply_middleware( app );
 
     setup_swagger( app );
 

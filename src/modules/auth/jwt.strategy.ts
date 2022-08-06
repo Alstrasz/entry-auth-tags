@@ -55,7 +55,7 @@ export class JwtStrategyUserWithTags extends PassportStrategy( Strategy, 'jwt-us
     }
 
     async validate ( payload: JwtPayload ) {
-        const user = await this.users_serivce.get_by_id( payload.sub, true )
+        const user = await this.users_serivce.get_by_id( payload.sub, 'tags' )
             .catch( ( err ) => {
                 console.log( err ); // to remove
                 throw new UnauthorizedException( { description: 'Jwt strategy: needs more description' } );

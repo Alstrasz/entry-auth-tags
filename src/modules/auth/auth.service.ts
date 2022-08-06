@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { lib as crypto_lib } from 'crypto-js';
@@ -12,6 +12,7 @@ import { JwtPayload } from './interfaces/jwt_payload';
 @Injectable()
 export class AuthService {
     constructor (
+        @Inject( forwardRef( ()=> UsersService ) )
         private users_service: UsersService,
         private jwt_service: JwtService,
     ) {}

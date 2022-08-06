@@ -1,58 +1,106 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import { ConflictExceptionDto } from '../../dto/conflict_exception.dto';
-import { UserWithTags } from '../prisma/interfaces/user';
+import _ from 'lodash';
+import { AuthService } from '../auth/auth.service';
+import { UserWithCreatedTags, UserWithTags } from '../prisma/interfaces/user';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateUserDto } from './dto/update_user.dto';
 import { CreateUserInterface } from './interfaces/create_user_interface';
 
 
 @Injectable()
 export class UsersService {
     constructor (
+        @Inject( forwardRef( ()=> AuthService ) )
+        private auth_service: AuthService,
         private prisma_service: PrismaService,
     ) { }
 
     async get_by_email ( email: string ): Promise<User | null> {
-        return await this.prisma_service.user.findUnique( {
+        return this.prisma_service.user.findUnique( {
             where: {
                 email,
             },
-        } )
-            .catch( ( err ) => {
-                console.log( err );
-                throw err;
-            } );
+        } );
     }
 
-    async get_by_id ( id: string, add_tags?: false ): Promise<User | null>;
-    async get_by_id ( id: string, add_tags?: true ): Promise<UserWithTags | null>;
-    async get_by_id ( id: string, add_tags: boolean = false ): Promise<User| UserWithTags | null> {
-        return await this.prisma_service.user.findUnique( {
+    async get_by_id ( id: string, add_tags?: 'none' ): Promise<User | null>;
+    async get_by_id ( id: string, add_tags?: 'tags' ): Promise<UserWithTags | null>;
+    async get_by_id ( id: string, add_tags?: 'created' ): Promise<UserWithCreatedTags | null>;
+    async get_by_id ( id: string, add_tags: string = 'none' ): Promise<User| UserWithTags | null> {
+        return this.prisma_service.user.findUnique( {
             where: {
                 id,
             },
             include: {
-                tags: add_tags,
+                tags: add_tags == 'tags',
+                created_tags: add_tags == 'created',
             },
-        } )
-            .catch( ( err ) => {
-                console.log( err );
-                throw err;
-            } );
+        } );
     }
 
     async create_user ( user_signin_credentials_dto: CreateUserInterface ): Promise<User> {
-        return await this.prisma_service.user.create( {
+        return this.prisma_service.user.create( {
             data: user_signin_credentials_dto,
         } )
             .catch( ( err ) => {
                 if ( err instanceof Prisma.PrismaClientKnownRequestError ) {
-                    // The .code property can be accessed in a type-safe manner
-                    if ( err.code === 'P2002' ) {
-                        throw new ConflictExceptionDto( err.meta?.target as Array<string> );
-                    }
+                    this.prisma_service.default_exception_handler( err, { conflict: true } );
                 }
                 throw err;
             } );
+    }
+
+    async update_user ( id: string, update_user_dto: UpdateUserDto ) {
+        const update_query: Prisma.UserUpdateInput = {};
+        if ( update_user_dto.email ) {
+            update_query.email = update_user_dto.email;
+        }
+        if ( update_user_dto.nickname ) {
+            update_query.nickname = update_user_dto.nickname;
+        }
+        if ( update_user_dto.password ) {
+            const { hash, salt } = this.auth_service.create_hash_salt( update_user_dto.password );
+            update_query.password = hash;
+            update_query.salt = salt;
+        }
+        return this.prisma_service.user.update( {
+            where: {
+                id,
+            },
+            data: update_query,
+        } )
+            .catch( ( err ) => {
+                if ( err instanceof Prisma.PrismaClientKnownRequestError ) {
+                    this.prisma_service.default_exception_handler( err, { conflict: true } );
+                }
+                throw err;
+            } );
+    }
+
+    async delete_user ( id: string ) { // cascading should be added
+        return this.prisma_service.user.delete( {
+            where: {
+                id,
+            },
+        } );
+    }
+
+    async connect_tags ( id: string, tag_ids: Array<number> ) {
+        return this.prisma_service.user.update( {
+            where: {
+                id,
+            },
+            data: {
+                tags: {
+                    connect: _.map( tag_ids, ( elem ) => {
+                        return { id: elem };
+                    } ),
+                },
+            },
+            include: {
+                tags: true,
+            },
+        } );
     }
 }

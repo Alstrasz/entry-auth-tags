@@ -17,11 +17,11 @@ export class TagsListSortedDto {
     @Type( () => PaginationMetadataDto )
         meta: PaginationMetadataDto;
 
-    constructor ( data: Array<TagWithCreator>, quantity: number, offset: number = 0, length: number = quantity - offset ) {
+    constructor ( data: Array<TagWithCreator>, quantity: number, offset: number = 0 ) {
         this.data = _.map( data, ( elem ) => {
             return new TagWithCreatorDto( elem );
         } );
 
-        this.meta = new PaginationMetadataDto( quantity, offset, length );
+        this.meta = new PaginationMetadataDto( quantity, offset, data.length );
     }
 }

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from '@prisma/client';
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateTagDto implements Partial<Tag> {
+export class UpdateTagDto implements Partial<Tag> {
     @ApiProperty()
     @IsOptional()
     @IsString()

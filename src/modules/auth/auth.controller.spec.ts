@@ -30,8 +30,7 @@ describe( 'AuthController', () => {
 
         controller = module.get<AuthController>( AuthController );
         service = module.get<AuthService>( AuthService );
-        app = module.createNestApplication();
-        await app.init();
+        app = await test_helper_service.create_application( module );
     } );
 
     it( 'should be defined', () => {
