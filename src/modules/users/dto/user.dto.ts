@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { Exclude, Expose, Type } from 'class-transformer';
 import * as _ from 'lodash';
-import { UserWithTags } from 'src/modules/prisma/interfaces/user';
-import { TagDto } from 'src/modules/tags/dto/tag.dto';
+import { UserWithTags } from '../../prisma/interfaces/user';
+import { TagDto } from '../../tags/dto/tag.dto';
 
 @Exclude()
 export class UserDto implements Omit<User, 'password' | 'salt' | 'id'> {

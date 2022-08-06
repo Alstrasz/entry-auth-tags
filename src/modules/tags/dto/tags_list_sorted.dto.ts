@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
 import * as _ from 'lodash';
-import { PaginationMetadataDto } from 'src/dto/pagination_metadata.dto';
-import { TagWithCreator } from 'src/modules/prisma/interfaces/tag';
+import { PaginationMetadataDto } from '../../../dto/pagination_metadata.dto';
+import { TagWithCreator } from '../../prisma/interfaces/tag';
 import { TagWithCreatorDto } from './tag.dto';
 
 @Exclude()
