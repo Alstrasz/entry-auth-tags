@@ -22,7 +22,7 @@ export class UserDto implements Omit<User, 'password' | 'salt' | 'id'> {
 
 @Exclude()
 export class UserWithTagsDto extends UserDto {
-    @ApiProperty( { type: TagDto } )
+    @ApiProperty( { type: () => [TagDto] } )
     @Expose()
     @Type( () => TagDto )
         tags: Array<TagDto>;

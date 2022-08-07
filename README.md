@@ -1,6 +1,6 @@
 # Description
 
-This is a smiple project to pass entry test. It provides CRUD for working with User and Tag models. Includes local and jwt auth.
+This is a smiple project to pass entry test. It provides CRUD for working with User and Tag models. Includes local and jwt auth. Once user is logged in, he can create, modify or delete tags. Tags can be assigned to user and later retrieved at certain endpoints.
 
 Description can be found at https://github.com/kisilya/test-tasks/tree/main/nodeJS
 
@@ -12,7 +12,7 @@ Description can be found at https://github.com/kisilya/test-tasks/tree/main/node
 
 - Prisma as ORM
 
-- Swagger at /api endpoint
+- Swagger at ```/api``` endpoint
 
 - Jest for integration tests
 
@@ -37,7 +37,6 @@ For prod docker-compose file should be modified
 ## With node
 
 Requiers postgres to be launched, setting passed as env variables. See ./docker-compose.yml as example.
-Prisma migration may be requiered.
 
 For pord
 
@@ -48,7 +47,18 @@ From project's root folder:
 
 For dev
 
+Prisma migration may be requiered.
 From project's root folder:
 - ```npm i```
 - ```npm run start:dev```
 
+# How to test
+
+Github actions has been created to run tests automatically on push \ pr to master
+
+To test localy:
+
+- ```npm i```
+- ```npm test:local``` - launches postgres through docker-compose
+OR
+- ```npm test``` - requieres postgres url to be specified in .env.test

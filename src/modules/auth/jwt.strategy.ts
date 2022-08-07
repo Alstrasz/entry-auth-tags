@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { jwt_constants } from './constants';
 import { JwtPayload } from './interfaces/jwt_payload';
@@ -26,11 +26,7 @@ export class JwtStrategy extends PassportStrategy( Strategy, 'jwt' ) {
     }
 
     async validate ( payload: JwtPayload ) {
-        const user = await this.users_serivce.get_by_id( payload.sub )
-            .catch( ( err ) => {
-                console.log( err ); // to remove
-                throw new UnauthorizedException( { description: 'Jwt strategy: needs more description' } );
-            } );
+        const user = await this.users_serivce.get_by_id( payload.sub );
         return user;
     }
 }
@@ -55,11 +51,7 @@ export class JwtStrategyUserWithTags extends PassportStrategy( Strategy, 'jwt-us
     }
 
     async validate ( payload: JwtPayload ) {
-        const user = await this.users_serivce.get_by_id( payload.sub, 'tags' )
-            .catch( ( err ) => {
-                console.log( err ); // to remove
-                throw new UnauthorizedException( { description: 'Jwt strategy: needs more description' } );
-            } );
+        const user = await this.users_serivce.get_by_id( payload.sub, 'tags' );
         return user;
     }
 }

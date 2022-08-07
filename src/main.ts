@@ -8,7 +8,8 @@ import { apply_middleware } from './helpers/apply_middleware';
 export function setup_swagger ( app: INestApplication ) {
     const config = new DocumentBuilder()
         .setTitle( 'entry-auth-tags' )
-        .setDescription( 'Api descciption of entry-auth-tags, project build to pass entry task. It provides simple local and jwt auth and CRUD for tags' )
+        .setDescription( 'Api descciption of entry-auth-tags, project build to pass entry task. It provides simple local and jwt auth and CRUD for tags.' +
+        'Once user is logged in, he can create, modify or delete tags. Tags can be assigned to user and later retrieved at certain endpoints' )
         .setVersion( '1.0.0' )
         .addTag( 'App' )
         .addBearerAuth( {

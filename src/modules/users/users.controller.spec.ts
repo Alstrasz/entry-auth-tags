@@ -20,7 +20,6 @@ describe( 'UsersController', () => {
         token: string;
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let test_helper_service: TestHelperService;
     beforeAll( async () => {
         const test_helper_module: TestingModule = await Test.createTestingModule( {

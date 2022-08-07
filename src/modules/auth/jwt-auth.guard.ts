@@ -2,6 +2,7 @@ import { CanActivate, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
+// There was a way to do this without creating multiple guards, but it would require bypassing nestjs passport library, which may not be pretty and create vulnerability
 
 /**
  * Validates JWT bearer token and assigns User to request.user

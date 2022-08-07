@@ -14,7 +14,7 @@ import { UsersService } from './users.service';
 export class UsersController {
     constructor ( private users_service: UsersService ) {}
 
-    @ApiOperation( { summary: 'Return current user\'s data' } )
+    @ApiOperation( { summary: 'Return current user\'s data and assigned tags' } )
     @ApiBearerAuth()
     @Get( '' )
     @UseGuards( new JwtAuthGuard( true ) )
@@ -33,7 +33,7 @@ export class UsersController {
         return new UserDto( await this.users_service.update_user( request.user.id, update_user_dto ) );
     }
 
-    @ApiOperation( { summary: 'Delete current user\'s data' } )
+    @ApiOperation( { summary: 'Delete current user\'s data and all created tags' } )
     @ApiBearerAuth()
     @Delete( '' )
     @UseGuards( new JwtAuthGuard() )
@@ -64,7 +64,7 @@ export class UsersController {
     @ApiBearerAuth()
     @Get( 'tag/my' )
     @UseGuards( new JwtAuthGuard( true ) )
-    @ApiOkResponse( { type: UserWithTagsDto } )
+    @ApiOkResponse( { type: TagsListDto } )
     async get_my_tags ( @Req() request: RequestWithUserAndTags ): Promise<TagsListDto> {
         return new TagsListDto( ( await this.users_service.get_by_id( request.user.id, 'created' ) ).created_tags );
     }
