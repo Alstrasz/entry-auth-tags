@@ -1,6 +1,6 @@
 # Description
 
-This is a smiple project to pass entry test. It provides CRUD for working with User and Tag models. Includes local and jwt auth. Once user is logged in, he can create, modify or delete tags. Tags can be assigned to user and later retrieved at certain endpoints.
+This is a simple project to pass entry test. It provides CRUD for working with User and Tag models. Includes local and jwt auth. Once user is logged in, he can create, modify or delete tags. Tags can be assigned to user and later retrieved at certain endpoints.
 
 Description can be found at https://github.com/kisilya/test-tasks/tree/main/nodeJS
 
@@ -36,7 +36,7 @@ Postgres at 127.0.0.1:5432
 
 For prod
 
-- - ```docker-compose -f docker-compose.prod.yml up```
+- ```docker-compose -f docker-compose.prod.yml up```
 
 Server will be available at http://127.0.0.1:3000
 
@@ -67,6 +67,8 @@ Github actions has been created to run tests automatically on push \ pr to maste
 To test localy:
 
 - ```npm i```
-- ```npm test:local``` - launches postgres through docker-compose
+- ```npm run test:local``` - launches postgres through docker-compose
+
 OR
-- ```npm test``` - requieres postgres url to be specified in .env.test
+
+- ```npm run test``` - requieres postgres to be launched and url to be specified in .env.test
