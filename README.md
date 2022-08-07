@@ -4,6 +4,8 @@ This is a smiple project to pass entry test. It provides CRUD for working with U
 
 Description can be found at https://github.com/kisilya/test-tasks/tree/main/nodeJS
 
+Application deployed on Heroku: https://entry-auth-tags.herokuapp.com/ (Althoght first connection may take some time due to heroku keeping containers in sleep mode)
+
 # Used technologies
 
 - Postgres used as database
@@ -26,13 +28,19 @@ From project's root folder:
 
 - ```docker-compose up``` (can take a long time first time due to downloading of images and libraries)
 
-Client will be available at http://127.0.0.1:3000
+Migration for prisma may be required
+
+Server will be available at http://127.0.0.1:3000
 
 Postgres at 127.0.0.1:5432
 
-Migration for prisma may be required
+For prod
 
-For prod docker-compose file should be modified
+- - ```docker-compose -f docker-compose.prod.yml up```
+
+Server will be available at http://127.0.0.1:3000
+
+Postgres at 127.0.0.1:5432
 
 ## With node
 

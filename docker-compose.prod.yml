@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+    nest:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: entry-auth-tags-nest-prod
+        depends_on:
+            - postgres
+        restart: "no"
+        logging:
+            options:
+                max-size: "50m"
+        environment:
+            - PORT=8080
+            - HOST=0.0.0.0
+            - DATABASE_URL=postgres://root:root@postgres:5432/root
+        ports:
+            - 3000:8080
+        networks:
+            - entry-auth-tags-prod
+        command: bash -c "npm run migrate && npm start"
+
+    postgres:
+        image: 'postgres:14.4'
+        container_name: entry-auth-tags-postgres-prod
+        restart: "no"
+        logging:
+            options:
+                max-size: "50m"
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=root
+            - POSTGRES_PASSWORD=root
+            - POSTGRES_DB=root
+#        volumes:
+#            - ./db-data/:/var/lib/postgresql/data/
+        networks:
+            - entry-auth-tags-prod
+
+networks:
+    entry-auth-tags-prod:
