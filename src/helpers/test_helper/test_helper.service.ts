@@ -72,4 +72,8 @@ export class TestHelperService {
         await app.init();
         return app;
     }
+
+    async get_tag_by_id ( id: number ) {
+        return this.tags_service.get_tag_by_id( id );
+    }
 }

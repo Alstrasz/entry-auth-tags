@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiConflictResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConflictResponse, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ConflictExceptionDto } from '../../dto/conflict_exception.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TagsListDto } from '../tags/dto/tags_list.dto';
@@ -46,7 +46,7 @@ export class UsersController {
     @ApiBearerAuth()
     @Post( 'tag' )
     @UseGuards( new JwtAuthGuard( true ) )
-    @ApiOkResponse( { type: TagsListDto } )
+    @ApiCreatedResponse( { type: TagsListDto } )
     async assign_tags_to_me ( @Body() conect_tags_dto: ConnectTagsDto, @Req() request: RequestWithUser ): Promise<TagsListDto> {
         return new TagsListDto( ( await this.users_service.connect_tags( request.user.id, conect_tags_dto.tags ) ).tags );
     }
