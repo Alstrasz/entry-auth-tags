@@ -8,11 +8,16 @@ import { INestApplication } from '@nestjs/common';
 import { AccessTokenDto } from './dto/access_token.dto';
 import { AuthService } from './auth.service';
 import { UserLoginCredentialsDto } from './dto/user_login_credentials.dto';
+import { UserSigninCredentialsDto } from './dto/user_signin_credentials.dto';
 
 describe( 'AuthController', () => {
     let app: INestApplication;
     let controller: AuthController;
     let service: AuthService;
+    let user: {
+        user_signin_credentials_dto: UserSigninCredentialsDto;
+        token: string;
+    };
 
     let test_helper_service: TestHelperService;
     beforeAll( async () => {
@@ -30,6 +35,7 @@ describe( 'AuthController', () => {
 
         controller = module.get<AuthController>( AuthController );
         service = module.get<AuthService>( AuthService );
+        user = await test_helper_service.sign_in_unique_user();
         app = await test_helper_service.create_application( module );
     } );
 
@@ -41,28 +47,153 @@ describe( 'AuthController', () => {
         const credentials = test_helper_service.get_unique_user_signin_credentials_dto();
 
         return request( app.getHttpServer() )
-            .post( '/auth/signin' )
+            .post( '/signin' )
             .send( credentials )
             .expect( 201 )
             .expect( ( res ) => {
-                expect( service.verify_token( ( res.body as AccessTokenDto ).token ) ).toBeTruthy();
+                const body: AccessTokenDto = res.body;
+                expect( service.verify_token( body.token ) ).toBeTruthy();
             } );
     } );
 
-    it( 'should login properly', async () => {
-        const credentials = ( await test_helper_service.sign_in_unique_user() ).user_signin_credentials_dto;
+    it( 'should enforce password limitations', async () => {
+        const credentials = test_helper_service.get_unique_user_signin_credentials_dto();
 
+        credentials.password = '12345678';
+        await request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( credentials )
+            .expect( 400 );
+
+        credentials.password = 'qwertyui';
+        await request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( credentials )
+            .expect( 400 );
+
+        credentials.password = 'QWERTYUI';
+        await request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( credentials )
+            .expect( 400 );
+
+        credentials.password = 'A2345678';
+        await request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( credentials )
+            .expect( 400 );
+
+        credentials.password = 'aA1';
+        await request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( credentials )
+            .expect( 400 );
+
+        credentials.password = 'aA1234567890123456789012345678901234567890';
+        await request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( credentials )
+            .expect( 400 );
+
+        credentials.password = 'aA12345678';
+        return request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( credentials )
+            .expect( 201 );
+    } );
+
+    it( 'should login properly', async () => {
         const login_credentials: UserLoginCredentialsDto = {
-            email: credentials.email,
-            password: credentials.password,
+            email: user.user_signin_credentials_dto.email,
+            password: user.user_signin_credentials_dto.password,
         };
 
         return request( app.getHttpServer() )
-            .post( '/auth/login' )
+            .post( '/login' )
             .send( login_credentials )
             .expect( 200 )
             .expect( ( res ) => {
                 expect( service.verify_token( ( res.body as AccessTokenDto ).token ) ).toBeTruthy();
             } );
+    } );
+
+    it( 'should not login with wrong credentials', async () => {
+        let login_credentials: UserLoginCredentialsDto = {
+            email: user.user_signin_credentials_dto.email + '1',
+            password: user.user_signin_credentials_dto.password,
+        };
+
+        await request( app.getHttpServer() )
+            .post( '/login' )
+            .send( login_credentials )
+            .expect( 401 );
+
+        login_credentials = {
+            email: user.user_signin_credentials_dto.email,
+            password: user.user_signin_credentials_dto.password + '1',
+        };
+
+        return request( app.getHttpServer() )
+            .post( '/login' )
+            .send( login_credentials )
+            .expect( 401 );
+    } );
+
+    it( 'should enforce unique constraint on sigin properly', async () => {
+        const credentials = test_helper_service.get_unique_user_signin_credentials_dto();
+
+        await request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( {
+                email: user.user_signin_credentials_dto.email,
+                nickname: credentials.nickname,
+                password: credentials.password,
+            } )
+            .expect( 409 );
+
+        await request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( {
+                email: credentials.email,
+                nickname: user.user_signin_credentials_dto.nickname,
+                password: credentials.password,
+            } )
+            .expect( 409 );
+
+        return request( app.getHttpServer() )
+            .post( '/signin' )
+            .send( {
+                email: credentials.email,
+                nickname: credentials.nickname,
+                password: user.user_signin_credentials_dto.password,
+            } )
+            .expect( 201 )
+            .expect( ( res ) => {
+                const body: AccessTokenDto = res.body;
+                expect( service.verify_token( body.token ) ).toBeTruthy();
+            } );
+    } );
+
+    it( 'should enforse jwt bearer auth', async () => {
+        await request( app.getHttpServer() )
+            .post( '/logout' )
+            .expect( 401 );
+
+        await request( app.getHttpServer() )
+            .post( '/logout' )
+            .auth( user.token + '1', { type: 'bearer' } )
+            .expect( 401 );
+
+        return request( app.getHttpServer() )
+            .post( '/logout' )
+            .auth( user.token, { type: 'bearer' } )
+            .expect( 200 );
+    } );
+
+    it( 'should logout properly', async () => {
+        return request( app.getHttpServer() ) // there is no robust way to invalidate simple jwt bearer auth, access refresh tokens requiered for that.
+            .post( '/logout' ) // Considering limitations... Just pretending not to track this user anymore -)
+            .auth( user.token, { type: 'bearer' } )
+            .expect( 200 );
     } );
 } );

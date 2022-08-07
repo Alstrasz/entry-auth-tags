@@ -55,9 +55,8 @@ export class TagsController {
         const sort_by_name: boolean = query.sortByName !== undefined;
         const offset = query.offset || 0;
         const length = query.length || -1;
-        const count = this.tags_service.count_all();
         const tags = await this.tags_service.get_all_sorted( sort_by_order, sort_by_name, offset, length );
-        return new TagsListSortedDto( tags, await count, offset );
+        return new TagsListSortedDto( tags.tags, tags.count, offset );
     }
 
 

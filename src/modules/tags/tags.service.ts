@@ -36,7 +36,7 @@ export class TagsService {
         } );
     }
 
-    async get_all_sorted ( sort_by_order: boolean = false, sort_by_name: boolean = false, offset: number = 0, length: number = -1 ): Promise<Array<TagWithCreator>> {
+    async get_all_sorted ( sort_by_order: boolean = false, sort_by_name: boolean = false, offset: number = 0, length: number = -1 ): Promise<{ tags: Array<TagWithCreator>, count: number }> {
         const order_by: Array<Prisma.TagOrderByWithAggregationInput> = [];
         if ( sort_by_order ) {
             order_by.push( { sortOrder: 'asc' } );
@@ -44,13 +44,18 @@ export class TagsService {
         if ( sort_by_name ) {
             order_by.push( { name: 'asc' } );
         }
-        return this.prisma_service.tag.findMany( {
-            orderBy: order_by,
-            skip: offset,
-            take: length != -1 ? length : undefined,
-            include: {
-                created_by: true,
-            },
+        return this.prisma_service.$transaction( async ( prisma ) => {
+            return {
+                tags: await prisma.tag.findMany( {
+                    orderBy: order_by,
+                    skip: offset,
+                    take: length != -1 ? length : undefined,
+                    include: {
+                        created_by: true,
+                    },
+                } ),
+                count: await prisma.tag.count(),
+            };
         } );
     }
 
@@ -72,9 +77,5 @@ export class TagsService {
                 id,
             },
         } );
-    }
-
-    async count_all (): Promise<number> {
-        return this.prisma_service.tag.count();
     }
 }

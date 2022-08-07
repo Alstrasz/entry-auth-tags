@@ -15,7 +15,7 @@ export function setup_swagger ( app: INestApplication ) {
             type: 'http',
             scheme: 'bearer',
             bearerFormat: 'JWT',
-            description: 'JWT token issued when logged in \ registered',
+            description: 'JWT token issued when logged in \ registered. On fail returns status response 401 even if it is not specified directly on endpoint return objects',
         } )
         .build();
     const document = SwaggerModule.createDocument( app, config );
