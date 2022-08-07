@@ -67,7 +67,7 @@ export class TagsController {
     @ApiOkResponse( { type: TagWithCreatorDto } )
     @ApiNotFoundResponse( { type: NotFoundExceptionDto } )
     @ApiForbiddenResponse( { type: ForbiddenExceptionDto } )
-    async update_tag_by_id ( @Body() update_tag_dto: UpdateTagDto, @Param( 'id', new ParseIntPipe() ) id: number, @Req() request: RequestWithUser ) { // : Promise<TagWithCreatorDto> {
+    async update_tag_by_id ( @Body() update_tag_dto: UpdateTagDto, @Param( 'id', new ParseIntPipe() ) id: number, @Req() request: RequestWithUser ): Promise<TagWithCreatorDto> {
         // It is fine without transaction since creator cannot be changed
         const tag = await this.tags_service.get_tag_by_id( id )
             .then( ( val ) => {
@@ -79,7 +79,7 @@ export class TagsController {
         if ( tag.created_by.id != request.user.id ) {
             throw new ForbiddenExceptionDto( 'Only creator can update tag' );
         }
-        return this.tags_service.update_tag( id, update_tag_dto );
+        return new TagWithCreatorDto( await this.tags_service.update_tag( id, update_tag_dto ) );
     }
 
 

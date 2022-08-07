@@ -61,7 +61,7 @@ describe( 'TagsController', () => {
             .expect( 200 )
             .expect( ( res ) => {
                 expect( res.body.name ).toBe( tag_info.tag.name );
-                expect( res.body.creator.email ).toBe( user.user_signin_credentials_dto.email );
+                expect( res.body.creator.nickname ).toBe( user.user_signin_credentials_dto.nickname );
             } );
     } );
 
@@ -85,7 +85,7 @@ describe( 'TagsController', () => {
             .expect( 200 )
             .expect( ( res ) => {
                 expect( res.body.name ).toBe( dto.name );
-                expect( res.body.creator.email ).toBe( user.user_signin_credentials_dto.email );
+                expect( res.body.creator.nickname ).toBe( user.user_signin_credentials_dto.nickname );
             } );
     } );
 

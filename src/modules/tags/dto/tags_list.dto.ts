@@ -7,7 +7,7 @@ import { TagDto } from './tag.dto';
 @Exclude()
 export class TagsListDto {
     @Expose()
-    @ApiProperty( { type: TagDto } )
+    @ApiProperty( { type: [TagDto] } )
     @Type( () => TagDto )
         tags: Array<TagDto>;
 

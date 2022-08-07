@@ -34,3 +34,19 @@ export class UserWithTagsDto extends UserDto {
         } );
     }
 }
+
+@Exclude()
+export class UserNameUidDto implements Omit<User, 'password' | 'salt' | 'id' | 'email'> {
+    @ApiProperty()
+    @Expose()
+        nickname: string;
+
+    @ApiProperty()
+    @Expose()
+        uid: string;
+
+    constructor ( data: User ) {
+        this.nickname = data.nickname;
+        this.uid = data.id;
+    }
+}

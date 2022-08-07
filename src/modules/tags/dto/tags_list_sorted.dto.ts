@@ -8,7 +8,7 @@ import { TagWithCreatorDto } from './tag.dto';
 @Exclude()
 export class TagsListSortedDto {
     @Expose()
-    @ApiProperty( { type: TagWithCreatorDto } )
+    @ApiProperty( { type: [TagWithCreatorDto] } )
     @Type( () => TagWithCreatorDto )
         data: Array<TagWithCreatorDto>;
 

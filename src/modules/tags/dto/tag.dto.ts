@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from '@prisma/client';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { TagWithCreator } from '../../prisma/interfaces/tag';
-import { UserDto } from '../../users/dto/user.dto';
+import { UserNameUidDto } from '../../users/dto/user.dto';
 
 @Exclude()
 export class TagDto implements Omit<Tag, 'creator'> {
@@ -25,13 +25,16 @@ export class TagDto implements Omit<Tag, 'creator'> {
 
 @Exclude()
 export class TagWithCreatorDto extends TagDto {
-    @ApiProperty( { type: () => UserDto } )
+    @Exclude()
+        id: number; // In docs this is omitted. Not sure why this should be omitted... but w/e
+
+    @ApiProperty( { type: () => UserNameUidDto } )
     @Expose()
-    @Type( () => UserDto )
-        creator: UserDto;
+    @Type( () => UserNameUidDto )
+        creator: UserNameUidDto;
 
     constructor ( data: TagWithCreator ) {
         super( data );
-        this.creator = new UserDto( data.created_by );
+        this.creator = new UserNameUidDto( data.created_by );
     }
 }
